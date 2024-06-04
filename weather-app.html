@@ -57,11 +57,11 @@
           console.log(new Date().toISOString(), "[Test]", "Running the test");
 
           // TODO: Make the API call and handle the results
+          // The api key provided above is invalid, so I used my own api key.
           try {
             let response = await axios.get(
               "https://api.openweathermap.org/data/2.5/weather?lat=36.033115&lon=-86.782776&units=imperial&appid=cd276afb39743054a6f98669914a6a34"
             );
-            console.log(response);
             this.setResults(response.data);
           } catch (error) {
             this.setError(error);
