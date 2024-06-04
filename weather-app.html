@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <title>FreightWise Programming Test</title>
+    <title>Seaton FreightWise Programming Test</title>
 
     <script>
       "use strict";
@@ -50,28 +50,134 @@
        */
       class Test {
         constructor() {
-          this.testResults = document.getElementsByClassName("test-results");
+          this.testResults = document.getElementsByClassName("test-results")[0];
         }
 
         async run() {
           console.log(new Date().toISOString(), "[Test]", "Running the test");
 
           // TODO: Make the API call and handle the results
+          try {
+            let response = await axios.get(
+              "https://api.openweathermap.org/data/2.5/weather?lat=36.033115&lon=-86.782776&units=imperial&appid=cd276afb39743054a6f98669914a6a34"
+            );
+            console.log(response);
+            this.setResults(response.data);
+          } catch (error) {
+            this.setError(error);
+          }
         }
 
-        setError(message) {
+        setError(error) {
           // TODO: Format the error
-          this.testResults.innerHTML = (message || "").toString();
+          const formattedMessage = `
+          <div class="centered">
+            <p class="centered-text data-item">An error has occurred</p>
+            <p class="centered-text data-item">${error.message}</p>
+            <p class="centered-text data-item">Please try again later.</p>
+          </div>
+          `;
+          console.log(error.message);
+          this.testResults.innerHTML = (formattedMessage || "").toString();
+        }
+
+        windDirectionConverter(degrees) {
+          const directions = [
+            "N ",
+            "N/NE ",
+            "NE ",
+            "E/NE ",
+            "E ",
+            "E/SE ",
+            "SE ",
+            "S/SE ",
+            "S ",
+            "S/SW ",
+            "SW ",
+            "W/SW ",
+            "W ",
+            "W/NW ",
+            "NW ",
+            "N/NW ",
+          ];
+
+          const index = Math.round(degrees / 22.5) % 16;
+          return directions[index];
         }
 
         setResults(results) {
           // TODO: Format the results
-          this.testResults.innerHTML = (results || "").toString();
+          let direction = this.windDirectionConverter(results.wind.deg);
+
+          let weatherOutput = `
+          <div class="centered">
+          <h1 class="centered-text">Weather for ${results.name}</h1>
+          <img class="icon" src="https://openweathermap.org/img/wn/${
+            results.weather[0].icon
+          }@2x.png" alt="${results.weather[0].description}"/>
+          <div>
+            <div class="centered-text">
+              <label class="label">Current Conditions:</label>
+              <p class="data-item">${results.weather[0].description}</p>
+            </div>
+            <div class="centered-text">
+              <label class="label">Current Temp.:</label>
+              <p class="data-item">${results.main.temp.toFixed(0)}&deg;F</p>
+            </div>
+            <div class="centered-text">
+              <label class="label">Feels Like:</label>
+              <p class="data-item">${results.main.feels_like.toFixed(
+                0
+              )}&deg;F</p>
+            </div>
+            <div class="centered-text">
+              <label class="label">Humidity:</label>
+              <p class="data-item">${results.main.humidity}%</p>
+            </div>
+            <div class="centered-text">
+              <label class="label">Pressure:</label>
+              <p class="data-item">${results.main.pressure} hPa</p>
+            </div>
+            <div class="centered-text">
+              <label class="label">Wind:</label>
+              <p class="data-item">${direction}${results.wind.speed.toFixed(
+            0
+          )} mph</p>
+            </div>
+          </div>
+          </div>
+          `;
+          this.testResults.innerHTML = (weatherOutput || "").toString();
         }
       }
     </script>
 
     <style>
+      .centered {
+        width: 50%;
+        margin: 0 auto;
+      }
+
+      .centered-text {
+        text-align: center;
+      }
+
+      .icon {
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .label {
+        font-size: x-large;
+      }
+
+      .data-item {
+        font-size: xx-large;
+        font-weight: bold;
+        margin-top: 0;
+      }
+
       .button-container {
         text-align: center;
       }
@@ -94,12 +200,18 @@
       .button-container > button:active {
         background-color: #006000;
       }
+
+      body {
+        background-color: #87cefa;
+        text-shadow: 0.5rem 0.5rem 0.5rem rgba(0, 0, 0, 0.5);
+        color: #ffffff;
+      }
     </style>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   </head>
   <body>
-    <div class="test-results"></div>
+    <div class="test-results centered"></div>
 
     <div class="button-container"></div>
 
