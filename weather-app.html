@@ -58,11 +58,14 @@
 
           // TODO: Make the API call and handle the results
           // The api key provided above is invalid, so I used my own api key.
+          // Try to fetch current weather data in imperial units for Brentwood, TN's latitude and longitude.
           try {
             let response = await axios.get(
               "https://api.openweathermap.org/data/2.5/weather?lat=36.033115&lon=-86.782776&units=imperial&appid=cd276afb39743054a6f98669914a6a34"
             );
+            // If the api call is successful, pass the response data to the setResults method.
             this.setResults(response.data);
+            // If the api call returns an error, pass the error to the setError method.
           } catch (error) {
             this.setError(error);
           }
@@ -70,6 +73,8 @@
 
         setError(error) {
           // TODO: Format the error
+          // Format a message to display for users telling them that an error has occurred,
+          // providing the error message, and directing them to try again later.
           const formattedMessage = `
           <div class="centered">
             <p class="centered-text data-item">An error has occurred</p>
@@ -77,11 +82,16 @@
             <p class="centered-text data-item">Please try again later.</p>
           </div>
           `;
+          // Log the error message in the console.
           console.log(error.message);
           this.testResults.innerHTML = (formattedMessage || "").toString();
         }
 
+        // This function converts the wind direction from the integer degrees
+        // returned from the api to common compass direction labels.
         windDirectionConverter(degrees) {
+          // Array of compass direction labels. The labels are ordered so that
+          // the degree ranges correspond to each label in sequence.
           const directions = [
             "N ",
             "N/NE ",
@@ -101,13 +111,30 @@
             "N/NW ",
           ];
 
+          // To calculate the index in the directions array:
+          // 1. Since there are 16 compass direction options and 360 degrees on the compass,
+          // and since 360 degrees / 16 = 22.5, Divide the degrees by 22.5 to get the
+          // corresponding segment in the compass directions.
+          // 2. Use Math.round to round to the nearest whole number.
+          // 3. Use modulo 16 to identify the index of the appropriate label.
           const index = Math.round(degrees / 22.5) % 16;
+
+          // Return the corresponding compass direction label from the directions array.
           return directions[index];
         }
 
         setResults(results) {
           // TODO: Format the results
+
+          // Convert the wind direction degrees to the appropriate compass label.
           let direction = this.windDirectionConverter(results.wind.deg);
+
+          //The data returned from the api will be rendered in the following format,
+          // centered on the page:
+          // From top to bottom, "Weather for Brentwood," the current weather's icon,
+          // a div for each piece of weather data, containing a label, and the data itself.
+          // All decimals are rounded to the nearest whole number, and all appropriate
+          // unit labels, as well as special symbols, are included.
 
           let weatherOutput = `
           <div class="centered">
@@ -153,25 +180,32 @@
     </script>
 
     <style>
+      /* Centers an element on the page. */
       .centered {
         width: 50%;
         margin: 0 auto;
       }
 
+      /* Centers text. */
       .centered-text {
         text-align: center;
       }
 
+      /* Centers the icon. */
       .icon {
         display: flex;
         margin-left: auto;
         margin-right: auto;
       }
 
+      /* Sets the font size for each label. */
       .label {
         font-size: x-large;
       }
 
+      /* Sets the font size for each weather data item,
+      makes the text bold, and positions it directly
+      beneath its label. */
       .data-item {
         font-size: xx-large;
         font-weight: bold;
@@ -201,6 +235,8 @@
         background-color: #006000;
       }
 
+      /* Sets the background to sky blue, text color to white,
+      and adds text shadow to all text in the body */
       body {
         background-color: #87cefa;
         text-shadow: 0.5rem 0.5rem 0.5rem rgba(0, 0, 0, 0.5);
