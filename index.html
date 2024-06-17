@@ -78,12 +78,10 @@
           const formattedMessage = `
           <div class="centered">
             <p class="centered-text data-item">An error has occurred</p>
-            <p class="centered-text data-item">${error.message}</p>
             <p class="centered-text data-item">Please try again later.</p>
           </div>
           `;
-          // Log the error message in the console.
-          console.log(error.message);
+
           this.testResults.innerHTML = (formattedMessage || "").toString();
         }
 
